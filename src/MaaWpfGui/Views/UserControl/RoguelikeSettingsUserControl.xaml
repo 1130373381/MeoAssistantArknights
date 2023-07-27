@@ -1,0 +1,122 @@
+<UserControl
+    x:Class="MaaWpfGui.Views.UserControl.RoguelikeSettingsUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+    xmlns:controls="clr-namespace:MaaWpfGui.Styles.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:styles="clr-namespace:MaaWpfGui.Styles"
+    xmlns:ui="clr-namespace:MaaWpfGui.ViewModels.UI"
+    xmlns:viewModels="clr-namespace:MaaWpfGui.ViewModels"
+    xmlns:vm="clr-namespace:MaaWpfGui"
+    d:DataContext="{d:DesignInstance {x:Type ui:SettingsViewModel}}"
+    d:DesignWidth="220"
+    mc:Ignorable="d">
+    <StackPanel>
+        <StackPanel Visibility="{c:Binding !TaskSettingVisibilities.EnableAdvancedSettings}">
+            <ComboBox
+                Margin="0,5"
+                hc:InfoElement.Title="{DynamicResource RoguelikeTheme}"
+                IsHitTestVisible="{Binding Idle}"
+                ItemsSource="{Binding RoguelikeThemeList}"
+                SelectedValue="{Binding RoguelikeTheme}"
+                SelectedValuePath="Value"
+                Style="{StaticResource ComboBoxExtend}" />
+            <ComboBox
+                Margin="0,5"
+                hc:InfoElement.Title="{DynamicResource Strategy}"
+                DisplayMemberPath="Display"
+                IsHitTestVisible="{Binding Path=Idle}"
+                ItemsSource="{Binding RoguelikeModeList}"
+                SelectedValue="{Binding RoguelikeMode}"
+                SelectedValuePath="Value"
+                Style="{StaticResource ComboBoxExtend}" />
+            <ComboBox
+                Margin="0,5"
+                hc:InfoElement.Title="{DynamicResource StartingSquad}"
+                DisplayMemberPath="Display"
+                IsHitTestVisible="{Binding Idle}"
+                ItemsSource="{Binding RoguelikeSquadList}"
+                MaxDropDownHeight="800"
+                SelectedValue="{Binding RoguelikeSquad}"
+                SelectedValuePath="Value"
+                Style="{StaticResource ComboBoxExtend}" />
+        </StackPanel>
+
+        <StackPanel Visibility="{c:Binding TaskSettingVisibilities.EnableAdvancedSettings}">
+
+            <hc:NumericUpDown
+                Margin="0,5"
+                hc:InfoElement.Title="{DynamicResource StartTimesLimit}"
+                Style="{StaticResource NumericUpDownExtend}"
+                ValueChanged="NumericUpDown_ValueChanged"
+                Value="{Binding RoguelikeStartsCount}" />
+            <CheckBox
+                Margin="0,10"
+                Content="{DynamicResource InvestmentEnabled}"
+                IsChecked="{Binding RoguelikeInvestmentEnabled}" />
+            <CheckBox
+                Margin="0,10"
+                IsChecked="{Binding RoguelikeStopWhenInvestmentFull}"
+                IsEnabled="{Binding RoguelikeInvestmentEnabled}">
+                <TextBlock
+                    Block.TextAlignment="Left"
+                    Text="{DynamicResource StopOnGoldLimit}"
+                    TextWrapping="Wrap" />
+            </CheckBox>
+            <hc:NumericUpDown
+                Margin="0,5"
+                hc:InfoElement.Title="{DynamicResource GoldTimesLimit}"
+                IsEnabled="{Binding RoguelikeInvestmentEnabled}"
+                Style="{StaticResource NumericUpDownExtend}"
+                ValueChanged="NumericUpDown_ValueChanged"
+                Value="{Binding RoguelikeInvestsCount}" />
+
+            <CheckBox
+                Margin="0,10"
+                Content="{DynamicResource RefreshTraderWithDice}"
+                IsChecked="{Binding RoguelikeRefreshTraderWithDice}"
+                IsEnabled="{Binding RoguelikeRefreshTraderWithDiceEnabled}" />
+            <ComboBox
+                Margin="0,5"
+                hc:InfoElement.Title="{DynamicResource StartingRoles}"
+                DisplayMemberPath="Display"
+                IsHitTestVisible="{Binding Idle}"
+                ItemsSource="{Binding RoguelikeRolesList}"
+                SelectedValue="{Binding RoguelikeRoles}"
+                SelectedValuePath="Value"
+                Style="{StaticResource ComboBoxExtend}" />
+            <TextBlock
+                Margin="8,5,8,0"
+                HorizontalAlignment="Left"
+                Block.TextAlignment="Center"
+                Foreground="{DynamicResource PrimaryTextBrush}"
+                Text="{DynamicResource StartingCoreChar}"
+                TextWrapping="Wrap" />
+            <hc:TextBox
+                Margin="0,5"
+                Text="{Binding RoguelikeCoreChar}"
+                TextWrapping="Wrap"
+                ToolTip="{DynamicResource StartingCoreCharTip}" />
+            <CheckBox Margin="0,10" IsChecked="{Binding RoguelikeUseSupportUnit}">
+                <TextBlock
+                    Block.TextAlignment="Left"
+                    Text="{DynamicResource RoguelikeUseSupportUnit}"
+                    TextWrapping="Wrap" />
+            </CheckBox>
+            <CheckBox
+                Margin="0,10"
+                IsChecked="{Binding RoguelikeEnableNonfriendSupport}"
+                IsEnabled="{Binding RoguelikeUseSupportUnit}">
+                <TextBlock
+                    Block.TextAlignment="Left"
+                    Text="{DynamicResource RoguelikeUseNonFriendSupport}"
+                    TextWrapping="Wrap" />
+            </CheckBox>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

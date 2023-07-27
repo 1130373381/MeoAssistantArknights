@@ -1,49 +1,66 @@
 #pragma once
 
 #include "AsstPort.h"
+#include <stdint.h>
 
-namespace asst
-{
-    class Assistant;
-}
+struct AsstExtAPI;
+typedef struct AsstExtAPI* AsstHandle;
+
+typedef uint8_t AsstBool;
+typedef uint64_t AsstSize;
+
+typedef int32_t AsstId;
+typedef AsstId AsstMsgId;
+typedef AsstId AsstTaskId;
+typedef AsstId AsstAsyncCallId;
+
+typedef int32_t AsstOptionKey;
+typedef AsstOptionKey AsstStaticOptionKey;
+typedef AsstOptionKey AsstInstanceOptionKey;
+
+typedef void(ASST_CALL* AsstApiCallback)(AsstMsgId msg, const char* details_json, void* custom_arg);
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-    typedef void(ASST_CALL* AsstCallback)(int msg, const char* detail_json, void* custom_arg);
+    AsstBool ASSTAPI AsstSetUserDir(const char* path);
+    AsstBool ASSTAPI AsstLoadResource(const char* path);
+    AsstBool ASSTAPI AsstSetStaticOption(AsstStaticOptionKey key, const char* value);
 
-    ASSTAPI_PORT asst::Assistant* ASST_CALL AsstCreate(const char* dirname);
-    ASSTAPI_PORT asst::Assistant* ASST_CALL AsstCreateEx(const char* dirname, AsstCallback callback, void* custom_arg);
-    void ASSTAPI AsstDestroy(asst::Assistant* p_asst);
+    AsstHandle ASSTAPI AsstCreate();
+    AsstHandle ASSTAPI AsstCreateEx(AsstApiCallback callback, void* custom_arg);
+    void ASSTAPI AsstDestroy(AsstHandle handle);
 
-    bool ASSTAPI AsstCatchDefault(asst::Assistant* p_asst);
-    bool ASSTAPI AsstCatchEmulator(asst::Assistant* p_asst);
-    bool ASSTAPI AsstCatchCustom(asst::Assistant* p_asst, const char* address);
-    bool ASSTAPI AsstCatchFake(asst::Assistant* p_asst);
+    AsstBool ASSTAPI AsstSetInstanceOption(AsstHandle handle, AsstInstanceOptionKey key, const char* value);
 
-    bool ASSTAPI AsstAppendStartUp(asst::Assistant* p_asst);
-    bool ASSTAPI AsstAppendFight(asst::Assistant* p_asst, const char* stage, int max_mecidine, int max_stone, int max_times);
-    bool ASSTAPI AsstAppendAward(asst::Assistant* p_asst);
-    bool ASSTAPI AsstAppendVisit(asst::Assistant* p_asst);
-    bool ASSTAPI AsstAppendMall(asst::Assistant* p_asst, bool with_shopping);
-    // bool ASSTAPI AsstAppendProcessTask(asst::Assistant* p_asst, const char* task_name);
-    bool ASSTAPI AsstAppendInfrast(asst::Assistant* p_asst, int work_mode, const char** order, int order_size, const char* uses_of_drones, double dorm_threshold);
-    bool ASSTAPI AsstAppendRecruit(asst::Assistant* p_asst, int max_times, const int select_level[], int select_len, const int confirm_level[], int confirm_len, bool need_refresh, bool use_expedited);
-    bool ASSTAPI AsstAppendRoguelike(asst::Assistant* p_asst, int mode);
+    // 同步连接，功能已完全被异步连接取代
+    // FIXME: 5.0 版本将废弃此接口
+    /* deprecated */ AsstBool ASSTAPI AsstConnect(AsstHandle handle, const char* adb_path, const char* address,
+                                                  const char* config);
 
-    bool ASSTAPI AsstAppendDebug(asst::Assistant* p_asst);
+    AsstTaskId ASSTAPI AsstAppendTask(AsstHandle handle, const char* type, const char* params);
+    AsstBool ASSTAPI AsstSetTaskParams(AsstHandle handle, AsstTaskId id, const char* params);
 
-    bool ASSTAPI AsstStartRecruitCalc(asst::Assistant* p_asst, const int select_level[], int required_len, bool set_time);
-    bool ASSTAPI AsstStart(asst::Assistant* p_asst);
-    bool ASSTAPI AsstStop(asst::Assistant* p_asst);
+    AsstBool ASSTAPI AsstStart(AsstHandle handle);
+    AsstBool ASSTAPI AsstStop(AsstHandle handle);
+    AsstBool ASSTAPI AsstRunning(AsstHandle handle);
+    AsstBool ASSTAPI AsstConnected(AsstHandle handle);
 
-    bool ASSTAPI AsstSetPenguinId(asst::Assistant* p_asst, const char* id);
-    // bool ASSTAPI AsstSetParam(asst::Assistant* p_asst, const char* type, const char* param, const char* value);
+    /* Async with AsstMsg::AsyncCallInfo Callback*/
+    AsstAsyncCallId ASSTAPI AsstAsyncConnect(AsstHandle handle, const char* adb_path, const char* address,
+                                             const char* config, AsstBool block);
+    AsstAsyncCallId ASSTAPI AsstAsyncClick(AsstHandle handle, int32_t x, int32_t y, AsstBool block);
+    AsstAsyncCallId ASSTAPI AsstAsyncScreencap(AsstHandle handle, AsstBool block);
 
-    unsigned long long ASSTAPI AsstGetImage(asst::Assistant* p_asst, void* buff, unsigned long long buff_size);
-    bool ASSTAPI AsstCtrlerClick(asst::Assistant* p_asst, int x, int y, bool block);
+    AsstSize ASSTAPI AsstGetImage(AsstHandle handle, void* buff, AsstSize buff_size);
+    AsstSize ASSTAPI AsstGetUUID(AsstHandle handle, char* buff, AsstSize buff_size);
+    AsstSize ASSTAPI AsstGetTasksList(AsstHandle handle, AsstTaskId* buff, AsstSize buff_size);
+    AsstSize ASSTAPI AsstGetNullSize();
 
     ASSTAPI_PORT const char* ASST_CALL AsstGetVersion();
+    void ASSTAPI AsstLog(const char* level, const char* message);
+
 #ifdef __cplusplus
 }
 #endif
